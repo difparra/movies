@@ -1,0 +1,120 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        applicationId "com.diegoparra.movies"
+        minSdk 21
+        targetSdk 31
+        versionCode 1
+        versionName "1.0"
+        //  Desugaring setUp: https://developer.android.com/studio/write/java8-support#groovy
+        //  Desugaring java.time / Required when setting minSdkVersion to 20 or lower
+        multiDexEnabled true
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        // Desugaring java.time / Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+
+    //      ----------      BASIC DEPENDENCIES
+
+    implementation "androidx.core:core-ktx:$coreKtxVersion"
+    implementation "androidx.appcompat:appcompat:$appCompatVersion"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+
+    //  Dependency injection
+    implementation "com.google.dagger:hilt-android:$hiltVersion"
+    kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
+
+    // Desugaring java.time / Desugaring support for api<26 to work with java.time classes
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+
+    //      ----------      DATA
+
+    //  Coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlinCoroutinesVersion"
+
+    //  Room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"           //  Coroutines support for room
+
+    //  DataStore (SharedPrefs)
+    implementation "androidx.datastore:datastore-preferences:$dataStoreVersion"
+
+    //  Retrofit
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpLoggingInterceptorVersion"
+
+
+    //      ----------      UI
+
+    //  LiveData & ViewModel
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycleVersion"   //  Saved state module for viewModel
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltViewModelVersion"                  //  In order to inject viewModels
+    kapt "androidx.hilt:hilt-compiler:$hiltViewModelCompilerVersion"
+
+    //  Ui elements
+    implementation "com.google.android.material:material:$materialVersion"             //  Material design
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
+    implementation "io.coil-kt:coil:$coilVersion"
+
+    //  Navigation
+    implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
+    implementation "androidx.hilt:hilt-navigation-fragment:$navHiltVersion" //  In order to scope hiltNavGraphViewModels
+
+
+
+    //      ----------      TESTING
+
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "com.google.truth:truth:$truthVersion"      //  Easily write assertions
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesTestVersion"   //  Kotlin coroutines test
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"        //  Mockito framework
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+
+    androidTestImplementation "androidx.test.ext:junit:$androidJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+    androidTestImplementation "com.google.truth:truth:$truthVersion"                //  Easily write assertions
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesTestVersion"        //  Kotlin coroutines test
+    androidTestImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"     //  Test dependency for arch components (such as room and liveData)
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+
+}
