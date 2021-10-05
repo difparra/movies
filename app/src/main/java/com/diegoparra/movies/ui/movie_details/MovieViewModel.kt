@@ -1,4 +1,4 @@
-package com.diegoparra.movies.ui
+package com.diegoparra.movies.ui.movie_details
 
 import androidx.lifecycle.*
 import com.diegoparra.movies.data.MoviesRepository

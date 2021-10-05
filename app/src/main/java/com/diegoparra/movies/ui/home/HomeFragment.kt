@@ -1,9 +1,10 @@
-package com.diegoparra.movies.ui
+package com.diegoparra.movies.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -18,6 +19,7 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private val viewModel: HomeViewModel by viewModels()
+    private val adapter by lazy { MoviesAdapter(viewModel::onMovieClick) }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,22 +31,32 @@ class HomeFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        binding.moviesList.setHasFixedSize(true)
+        binding.moviesList.adapter = adapter
+
         subscribeUi()
-        binding.text.setOnClickListener {
-            //  TODO: set correct movieId
-            viewModel.onMovieClick("588228")
-        }
     }
 
     private fun subscribeUi() {
         viewModel.movies.observe(viewLifecycleOwner) {
             when (it) {
-                is Resource.Loading -> { /* TODO */
+                is Resource.Loading -> {
+                    binding.progressBar.isVisible = true
+                    adapter.submitList(emptyList())
+                    binding.errorMessage.isVisible = false
                 }
-                is Resource.Success ->
-                    binding.text.text = it.data.joinToString("\n") { it.title }
-                is Resource.Error ->
-                    binding.text.text = it.failure.message
+                is Resource.Success -> {
+                    binding.progressBar.isVisible = false
+                    adapter.submitList(it.data)
+                    binding.errorMessage.isVisible = false
+                }
+                is Resource.Error -> {
+                    binding.progressBar.isVisible = false
+                    adapter.submitList(emptyList())
+                    binding.errorMessage.isVisible = true
+                    binding.errorMessage.text = it.failure.message
+                }
             }
         }
         viewModel.navigateMovieDetails.observe(viewLifecycleOwner, EventObserver {

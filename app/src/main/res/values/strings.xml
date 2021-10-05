@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Movies</string>
+
+    <string name="movie_overview">Resumen</string>
+    <string name="movie_language">Idioma</string>
+    <string name="movie_release_date">Lanzamiento</string>
+    <string name="movie_homepage">Página web</string>
+
+    <string name="info_not_available">Información no disponible.</string>
+    <string name="info_not_available_short">N/D.</string>
+
 </resources>
