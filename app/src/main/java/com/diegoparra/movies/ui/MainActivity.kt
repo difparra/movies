@@ -1,8 +1,11 @@
-package com.diegoparra.movies
+package com.diegoparra.movies.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.diegoparra.movies.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
