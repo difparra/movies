@@ -20,6 +20,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            _movies.value = Resource.Loading
             _movies.value = moviesRepository.getPopularMovies().toResource()
         }
     }

@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import coil.load
 import com.diegoparra.movies.databinding.ListItemMovieBinding
 import com.diegoparra.movies.models.Movie
 import com.diegoparra.movies.utils.loadImage
@@ -48,6 +47,7 @@ class MoviesAdapter(private val onClickListener: (String) -> Unit) :
         fun bind(movie: Movie) {
             this.movie = movie
             binding.image.loadImage(movie.posterUrl)
+            binding.title.text = movie.title
         }
 
     }

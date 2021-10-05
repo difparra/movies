@@ -8,7 +8,6 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.UnderlineSpan
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,7 @@ import androidx.annotation.FloatRange
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.diegoparra.movies.R
 import com.diegoparra.movies.databinding.FragmentMovieBinding
 import com.diegoparra.movies.models.Genre
@@ -26,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.lang.StringBuilder
 import java.time.LocalDate
+import java.util.*
 
 @AndroidEntryPoint
 class MovieFragment : Fragment() {
@@ -44,6 +45,9 @@ class MovieFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         subscribeUi()
     }
 
@@ -75,10 +79,9 @@ class MovieFragment : Fragment() {
         binding.collapsingToolbar.title = movie.title
         loadRating(movie.voteAverage)
         loadDetails(movie.releaseDate, movie.runtimeMinutes, movie.genres)
-        binding.overview.text = movie.overview
-        binding.language.text = movie.language ?: getString(R.string.info_not_available)
-        binding.releaseDate.text =
-            movie.releaseDate?.toString() ?: getString(R.string.info_not_available)
+        loadOverview(movie.overview)
+        loadLanguage(movie.language)
+        loadReleaseDate(movie.releaseDate)
         loadHomepageUrl(movie.homepageUrl)
     }
 
@@ -107,6 +110,22 @@ class MovieFragment : Fragment() {
             detailsString.append(" · ").append(genres.joinToString { it.name })
         }
         binding.details.text = detailsString
+    }
+
+    private fun loadOverview(overview: String?) {
+        binding.overview.text = if (overview.isNullOrEmpty()) {
+            getString(R.string.info_not_available)
+        } else {
+            overview
+        }
+    }
+
+    private fun loadLanguage(language: Locale?) {
+        binding.language.text = language?.displayLanguage ?: getString(R.string.info_not_available)
+    }
+
+    private fun loadReleaseDate(releaseDate: LocalDate?) {
+        binding.releaseDate.text = releaseDate?.toString() ?: getString(R.string.info_not_available)
     }
 
     private fun loadHomepageUrl(homepageUrl: String?) {

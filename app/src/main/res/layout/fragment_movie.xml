@@ -45,7 +45,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:contentInsetStartWithNavigation="@dimen/padding_small" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

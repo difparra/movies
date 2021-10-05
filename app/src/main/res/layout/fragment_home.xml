@@ -13,7 +13,7 @@
         android:clipToPadding="false"
         android:padding="@dimen/padding_standard"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="3"
+        app:spanCount="@integer/movies_columns"
         tools:itemCount="10"
         tools:listitem="@layout/list_item_movie" />
 

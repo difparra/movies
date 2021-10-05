@@ -8,6 +8,7 @@ import com.diegoparra.movies.models.Genre
 import com.diegoparra.movies.models.Movie
 import timber.log.Timber
 import java.time.LocalDate
+import java.util.*
 
 object MoviesDtoMappersImpl : MoviesDtoMappers {
 
@@ -24,7 +25,7 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
             overview = overview ?: "",
             genres = genreIds?.map { Genre(it, "") } ?: emptyList(),
             releaseDate = parseLocalDateOrNull(releaseDate, movieId = id),
-            language = originalLanguage,
+            language = parseLocaleOrNull(originalLanguage, movieId = id),
             popularity = popularity,
             voteAverage = voteAverage?.coerceIn(0f, 10f),
             voteCount = voteCount,
@@ -45,7 +46,7 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
             overview = overview ?: "",
             genres = genres?.map { toGenre(it) } ?: emptyList(),
             releaseDate = parseLocalDateOrNull(releaseDate, movieId = id),
-            language = originalLanguage,
+            language = parseLocaleOrNull(originalLanguage, movieId = id),
             popularity = popularity,
             voteAverage = voteAverage?.coerceIn(0f, 10f),
             voteCount = voteCount,
@@ -62,7 +63,25 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
 
 
     /**
-     * This function is mean to avoid errors due to incorrect date formatting coming from the API.
+     * This function is meant to avoid errors due to incorrect language code from the API.
+     * Used locale over the simple string, as Locale can print language and not just some code,
+     * but it must be checked the code is correct from api beforehand.
+     */
+    private fun parseLocaleOrNull(languageTag: String?, movieId: String? = null): Locale? {
+        return if (languageTag.isNullOrEmpty()) {
+            null
+        } else {
+            try {
+                Locale.forLanguageTag(languageTag)
+            } catch (e: Exception) {
+                Timber.e("Couldn't parse languageTag: $languageTag from movieId = $movieId")
+                null
+            }
+        }
+    }
+
+    /**
+     * This function is meant to avoid errors due to incorrect date formatting coming from the API.
      * If date coming from the API is not in the correct format, is empty or is null,
      * the returned date will be null without throwing more exceptions.
      */

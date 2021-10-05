@@ -2,6 +2,7 @@ package com.diegoparra.movies.models
 
 import androidx.annotation.FloatRange
 import java.time.LocalDate
+import java.util.*
 
 data class Movie(
     val id: String,
@@ -11,7 +12,7 @@ data class Movie(
     val overview: String,
     val genres: List<Genre>,
     val releaseDate: LocalDate?,
-    val language: String?,
+    val language: Locale?,
     val popularity: Double?,
     @FloatRange(from = 0.0, to = 10.0) val voteAverage: Float?,
     val voteCount: Long?,
