@@ -6,6 +6,8 @@ import com.diegoparra.movies.data.network.dtos.MovieResponse
 import com.diegoparra.movies.data.network.dtos.MoviesListResponse
 import com.diegoparra.movies.models.Genre
 import com.diegoparra.movies.models.Movie
+import com.diegoparra.movies.utils.LocalDateUtils
+import com.diegoparra.movies.utils.LocaleUtils
 import timber.log.Timber
 import java.time.LocalDate
 import java.util.*
@@ -24,8 +26,8 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
             backdropUrl = backdropPath?.let { MoviesApi.IMAGE_URL_PREFIX + it } ?: "",
             overview = overview ?: "",
             genres = genreIds?.map { Genre(it, "") } ?: emptyList(),
-            releaseDate = parseLocalDateOrNull(releaseDate, movieId = id),
-            language = parseLocaleOrNull(originalLanguage, movieId = id),
+            releaseDate = LocalDateUtils.parseOrNull(releaseDate),
+            language = LocaleUtils.forLanguageTagOrNull(originalLanguage),
             popularity = popularity,
             voteAverage = voteAverage?.coerceIn(0f, 10f),
             voteCount = voteCount,
@@ -45,8 +47,8 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
             backdropUrl = backdropPath?.let { MoviesApi.IMAGE_URL_PREFIX + it } ?: "",
             overview = overview ?: "",
             genres = genres?.map { toGenre(it) } ?: emptyList(),
-            releaseDate = parseLocalDateOrNull(releaseDate, movieId = id),
-            language = parseLocaleOrNull(originalLanguage, movieId = id),
+            releaseDate = LocalDateUtils.parseOrNull(releaseDate),
+            language = LocaleUtils.forLanguageTagOrNull(originalLanguage),
             popularity = popularity,
             voteAverage = voteAverage?.coerceIn(0f, 10f),
             voteCount = voteCount,
@@ -60,42 +62,5 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
 
     private fun toGenre(genreDto: GenreDto): Genre =
         Genre(id = genreDto.id, name = genreDto.name ?: "")
-
-
-    /**
-     * This function is meant to avoid errors due to incorrect language code from the API.
-     * Used locale over the simple string, as Locale can print language and not just some code,
-     * but it must be checked the code is correct from api beforehand.
-     */
-    private fun parseLocaleOrNull(languageTag: String?, movieId: String? = null): Locale? {
-        return if (languageTag.isNullOrEmpty()) {
-            null
-        } else {
-            try {
-                Locale.forLanguageTag(languageTag)
-            } catch (e: Exception) {
-                Timber.e("Couldn't parse languageTag: $languageTag from movieId = $movieId")
-                null
-            }
-        }
-    }
-
-    /**
-     * This function is meant to avoid errors due to incorrect date formatting coming from the API.
-     * If date coming from the API is not in the correct format, is empty or is null,
-     * the returned date will be null without throwing more exceptions.
-     */
-    private fun parseLocalDateOrNull(date: String?, movieId: String? = null): LocalDate? {
-        return if (date.isNullOrEmpty()) {
-            null
-        } else {
-            try {
-                LocalDate.parse(date)
-            } catch (e: Exception) {
-                Timber.e("Couldn't parse date: $date from movieId = $movieId")
-                null
-            }
-        }
-    }
 
 }
