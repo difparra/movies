@@ -9,4 +9,11 @@
     <string name="info_not_available">Información no disponible.</string>
     <string name="info_not_available_short">N/D.</string>
 
+    <string name="retry">Reintentar</string>
+
+
+    <string name="empty_list">No se encontraron resultados.</string>
+    <string name="failure_network_connection">Ha ocurrido un error. Revisa tu conexión a internet y vuelve a intentar.</string>
+    <string name="failure_generic_message">Ha ocurrido un error.</string>
+
 </resources>

@@ -53,23 +53,14 @@ class MovieFragment : Fragment() {
 
     private fun subscribeUi() {
         viewModel.movie.observe(viewLifecycleOwner) {
+
+            binding.progressBar.isVisible = it is Resource.Loading
+            binding.content.isVisible = it is Resource.Success
+            binding.errorMessage.isVisible = it is Resource.Error
+
             when (it) {
-                is Resource.Loading -> {
-                    binding.progressBar.isVisible = true
-                    binding.errorMessage.isVisible = false
-                }
-                is Resource.Success -> {
-                    binding.progressBar.isVisible = false
-                    binding.content.isVisible = true
-                    binding.errorMessage.isVisible = false
-                    loadMovieData(movie = it.data)
-                }
-                is Resource.Error -> {
-                    binding.progressBar.isVisible = false
-                    binding.content.isVisible = false
-                    binding.errorMessage.isVisible = true
-                    binding.errorMessage.text = it.failure.message
-                }
+                is Resource.Success -> loadMovieData(movie = it.data)
+                is Resource.Error -> binding.errorMessage.text = it.failure.message
             }
         }
     }

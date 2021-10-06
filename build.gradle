@@ -9,10 +9,10 @@ buildscript {
 
         kotlinCoroutinesVersion = '1.4.3'
         roomVersion = '2.3.0'
-        dataStoreVersion = '1.0.0'
         gsonVersion = '2.8.7'
         retrofitVersion = '2.9.0'
         okHttpLoggingInterceptorVersion = '4.9.1'
+        pagingVersion = '3.0.1'
 
         lifecycleVersion = '2.3.1'
         hiltViewModelVersion = '1.0.0-alpha03'

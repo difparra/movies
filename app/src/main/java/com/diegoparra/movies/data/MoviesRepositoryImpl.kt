@@ -1,16 +1,23 @@
 package com.diegoparra.movies.data
 
-import android.util.Log
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.diegoparra.movies.data.local.MoviesDao
 import com.diegoparra.movies.data.local.MoviesEntityMappers
 import com.diegoparra.movies.data.local.entities.MovieEntity
 import com.diegoparra.movies.data.network.MoviesApi
 import com.diegoparra.movies.data.network.MoviesDtoMappers
+import com.diegoparra.movies.data.network.MoviesListPagingSource
 import com.diegoparra.movies.di.IoDispatcher
 import com.diegoparra.movies.models.Movie
 import com.diegoparra.movies.utils.Either
 import com.diegoparra.movies.utils.runCatching
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.Instant
@@ -33,6 +40,16 @@ class MoviesRepositoryImpl @Inject constructor(
                 dtoMappers.toMoviesList(popularMoviesDtos)
             }
         }
+
+    override fun getPopularMoviesStream(): Flow<PagingData<Movie>> {
+        return Pager(
+            config = PagingConfig(pageSize = MoviesApi.PAGE_SIZE, enablePlaceholders = false),
+            pagingSourceFactory = { MoviesListPagingSource(api) }
+        )
+            .flow
+            .map { it.map { dtoMappers.toMovie(it) } }
+            .flowOn(dispatcher)
+    }
 
     override suspend fun getMovieById(id: String): Either<Exception, Movie> =
         withContext(dispatcher) {

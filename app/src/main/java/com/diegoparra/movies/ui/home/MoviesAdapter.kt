@@ -2,39 +2,44 @@ package com.diegoparra.movies.ui.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.diegoparra.movies.databinding.ListItemMovieBinding
 import com.diegoparra.movies.models.Movie
 import com.diegoparra.movies.utils.loadImage
 
 class MoviesAdapter(private val onClickListener: (String) -> Unit) :
-    ListAdapter<Movie, MoviesAdapter.MovieViewHolder>(DiffCallback) {
+    PagingDataAdapter<Movie, MoviesAdapter.MovieViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
-        return MovieViewHolder.from(parent, onClickListener)
+        return MovieViewHolder.create(parent, onClickListener)
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
         val movie = getItem(position)
-        holder.bind(movie)
+        movie?.let { holder.bind(it) }
     }
-
 
     class MovieViewHolder(
         private val binding: ListItemMovieBinding,
         private val onClickListener: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
-        private lateinit var movie: Movie
+        private var movie: Movie? = null
 
         init {
-            binding.root.setOnClickListener { onClickListener(movie.id) }
+            binding.root.setOnClickListener { movie?.let { onClickListener(it.id) } }
+        }
+
+        fun bind(movie: Movie) {
+            this.movie = movie
+            binding.image.loadImage(movie.posterUrl)
+            binding.title.text = movie.title
         }
 
         companion object {
-            fun from(parent: ViewGroup, onClickListener: (String) -> Unit): MovieViewHolder {
+            fun create(parent: ViewGroup, onClickListener: (String) -> Unit): MovieViewHolder {
                 return MovieViewHolder(
                     ListItemMovieBinding.inflate(
                         LayoutInflater.from(parent.context), parent, false
@@ -42,12 +47,6 @@ class MoviesAdapter(private val onClickListener: (String) -> Unit) :
                     onClickListener
                 )
             }
-        }
-
-        fun bind(movie: Movie) {
-            this.movie = movie
-            binding.image.loadImage(movie.posterUrl)
-            binding.title.text = movie.title
         }
 
     }

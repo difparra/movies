@@ -18,7 +18,7 @@ object MoviesDtoMappersImpl : MoviesDtoMappers {
         return moviesListResponse.results.map { toMovie(it) }
     }
 
-    private fun toMovie(movieListItemDto: MovieListItemDto): Movie = with(movieListItemDto) {
+    override fun toMovie(movieListItemDto: MovieListItemDto): Movie = with(movieListItemDto) {
         Movie(
             id = id,
             title = if (!title.isNullOrBlank()) title else originalTitle ?: "",
