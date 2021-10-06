@@ -3,6 +3,7 @@ package com.diegoparra.movies.data.network
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.diegoparra.movies.data.network.dtos.MovieListItemDto
+import timber.log.Timber
 
 private const val MOVIES_STARTING_PAGE_INDEX = 1
 
@@ -14,7 +15,19 @@ class MoviesListPagingSource(
         val position = params.key ?: MOVIES_STARTING_PAGE_INDEX
         return try {
             val response = moviesApi.getPopularMovies(page = position)
-            val movies = response.results
+            val movies = response.results.toMutableList()
+
+            //  In case loadSize is greater than PageSize, additional results should be loaded and appended.
+            val totalPagesToLoad = params.loadSize / MoviesApi.PAGE_SIZE
+            if (totalPagesToLoad > 1) {
+                for(page in (position+1) until (position+totalPagesToLoad)) {
+                    if(page <= response.totalPages) {
+                        movies.addAll(moviesApi.getPopularMovies(page).results)
+                    }
+                }
+            }
+
+            Timber.d("movies = ${movies.joinToString { "[${it.id}, ${it.title}]" }}")
             val nextKey = if (position == response.totalPages) {
                 null
             } else {
